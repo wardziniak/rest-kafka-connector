@@ -71,4 +71,3 @@ fabric.properties
 .gitignore
 .idea/
 project/target/
-src/
