@@ -9,10 +9,8 @@ case class RestSinkConfig(props: JMap[String, String]) extends AbstractConfig(Re
   val restURL: String = getString(RestUrlProperty.Name)
 }
 
-
 object RestSinkConfig {
   val RestGroup = "Rest"
-
 
   val CONFIG_DEF: ConfigDef = new ConfigDef()
     .define(RestUrlProperty.Name,
@@ -25,7 +23,36 @@ object RestSinkConfig {
       ConfigDef.Width.LONG,
       RestUrlProperty.Display
     )
-
+    .define(FlashingModeProperty.Name,
+      ConfigDef.Type.STRING,
+      FlashingModeProperty.Default,
+      ConfigDef.Importance.MEDIUM,
+      FlashingModeProperty.Doc,
+      RestGroup,
+      1,
+      ConfigDef.Width.LONG,
+      FlashingModeProperty.Display
+    )
+    .define(RequestModeProperty.Name,
+      ConfigDef.Type.STRING,
+      RequestModeProperty.Default,
+      ConfigDef.Importance.HIGH,
+      RequestModeProperty.Doc,
+      RestGroup,
+      1,
+      ConfigDef.Width.LONG,
+      RequestModeProperty.Display
+    )
+    .define(RequestHeadersProperty.Name,
+      ConfigDef.Type.STRING,
+      RequestHeadersProperty.Default,
+      ConfigDef.Importance.HIGH,
+      RequestHeadersProperty.Doc,
+      RestGroup,
+      1,
+      ConfigDef.Width.LONG,
+      RequestHeadersProperty.Display
+    )
 
   object RestUrlProperty extends ConfigProperty {
     override val Name = "rest.url"
@@ -34,17 +61,24 @@ object RestSinkConfig {
     override val Display: String = "Rest server URL"
   }
 
-  object PutModeProperty extends ConfigProperty {
-    override val Name: String = "insert.mode"
-    override val Default: String = "bulk"
-    override val Doc: String = ""
-    override val Display: String =
-      """
-        |Insertion types:
-        | bigbulk - message are gather in batches for each commit
-        | smallbulk - for each portion returned by KafkaConsumer::pool(...) is inserted as one batch
-        | single - each message is put by single rest call
-      """.stripMargin
+  object FlashingModeProperty extends ConfigProperty {
+    override val Name: String = "flashing.mode"
+    override val Default: String = "commit"
+    override val Doc: String = "flashing.mode"
+    override val Display: String = "flashing.mode, possible values message/poll/commit"
+  }
+  object RequestModeProperty extends ConfigProperty {
+    override val Name: String = "request.mode"
+    override val Default: String = "single"
+    override val Doc: String = "request.mode"
+    override val Display: String = "request.mode, possible values single/grouped"
+  }
+
+  object RequestHeadersProperty extends ConfigProperty {
+    override val Name: String = "request.headers"
+    override val Default: String = ""
+    override val Doc: String = "request.headers"
+    override val Display: String = "request.headers, list of key value pairs separated with ';'. key and value are separated with '='."
   }
 
   trait ConfigProperty {
