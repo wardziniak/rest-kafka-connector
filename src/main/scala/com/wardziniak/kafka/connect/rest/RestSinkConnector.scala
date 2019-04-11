@@ -3,6 +3,7 @@ package com.wardziniak.kafka.connect.rest
 import java.util.{ArrayList => JArrayList, List => JList, Map => JMap}
 
 import com.typesafe.scalalogging.LazyLogging
+import com.wardziniak.kafka.connect.rest.sink.RestSinkConfig
 import org.apache.kafka.common.config.ConfigDef
 import org.apache.kafka.connect.connector.Task
 import org.apache.kafka.connect.sink.SinkConnector
