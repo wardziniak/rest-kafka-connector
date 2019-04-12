@@ -3,6 +3,7 @@ package com.wardziniak.kafka.connect.rest
 import java.util.{Collection => JCollection, Map => JMap}
 
 import com.typesafe.scalalogging.LazyLogging
+import com.wardziniak.kafka.connect.rest.sink.properties.FlushingMode.FlushingMode
 import com.wardziniak.kafka.connect.rest.sink.{RestSinkConfig, RestWriter}
 import org.apache.kafka.clients.consumer.OffsetAndMetadata
 import org.apache.kafka.common.TopicPartition
@@ -13,13 +14,14 @@ class RestSinkTask
     with LazyLogging {
 
   var restUrl: String = _
+  var flushingMode: FlushingMode = _
   var writer: RestWriter = _
-
 
   override def start(props: JMap[String, String]): Unit = {
     val sinkConfig = RestSinkConfig(props)
-    restUrl = sinkConfig.restURL
-    writer = RestWriter("")
+    restUrl = sinkConfig.getRestUrl
+    flushingMode = sinkConfig.getFlushingMode
+    writer = RestWriter(restUrl, flushingMode)
   }
 
   override def put(records: JCollection[SinkRecord]): Unit = {
@@ -29,7 +31,6 @@ class RestSinkTask
     })
     writer.flushPoll()
   }
-
 
   override def flush(currentOffsets: JMap[TopicPartition, OffsetAndMetadata]): Unit = {
     super.flush(currentOffsets)

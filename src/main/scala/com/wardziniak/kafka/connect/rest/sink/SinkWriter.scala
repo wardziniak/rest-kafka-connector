@@ -1,8 +1,8 @@
 package com.wardziniak.kafka.connect.rest.sink
 
-import com.softwaremill.sttp.{HttpURLConnectionBackend, Id, SttpBackend}
 import com.typesafe.scalalogging.LazyLogging
-import com.wardziniak.kafka.connect.rest.sink.SinkWriter.{CommitFlush, EachRecordFlush, FlushType, PollFlush}
+import com.wardziniak.kafka.connect.rest.sink.properties.FlushingMode
+import com.wardziniak.kafka.connect.rest.sink.properties.FlushingMode.FlushingMode
 import org.apache.kafka.connect.sink.SinkRecord
 
 import scala.collection.mutable.ArrayBuffer
@@ -10,7 +10,7 @@ import scala.collection.mutable.ArrayBuffer
 trait SinkWriter
   extends LazyLogging {
 
-  val flushType: FlushType = PollFlush
+  val flushType: FlushingMode
 
   private val bufferRecords: ArrayBuffer[SinkRecord] = ArrayBuffer()
 
@@ -21,22 +21,22 @@ trait SinkWriter
 
   final def flushMessage(): Unit = {
     logger.debug("flushForEachMessage")
-    flushRecords(EachRecordFlush)
+    flushRecords(FlushingMode.message)
   }
 
   final def flushPoll(): Unit = {
     logger.debug("flushForEachPoll")
-    flushRecords(PollFlush)
+    flushRecords(FlushingMode.poll)
   }
 
   final def flushCommit(): Unit = {
     logger.debug("flushForEachCommit")
-    flushRecords(CommitFlush)
+    flushRecords(FlushingMode.commit)
   }
 
   def flush(recordsToFlush: Seq[SinkRecord]): Boolean
 
-  private def flushRecords(flushType: FlushType): Boolean = {
+  private def flushRecords(flushType: FlushingMode): Boolean = {
     if (this.flushType == flushType) {
       val resultsStatus = flush(collection.immutable.Seq(bufferRecords: _*))
       if (resultsStatus)
@@ -46,12 +46,4 @@ trait SinkWriter
     else
       true
   }
-
-}
-
-object SinkWriter {
-  sealed trait FlushType
-  object EachRecordFlush extends FlushType
-  object PollFlush extends FlushType
-  object CommitFlush extends FlushType
 }

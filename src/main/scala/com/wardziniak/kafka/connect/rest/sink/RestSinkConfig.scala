@@ -2,11 +2,19 @@ package com.wardziniak.kafka.connect.rest.sink
 
 import java.util.{Map => JMap}
 
-import com.wardziniak.kafka.connect.rest.sink.RestSinkConfig.RestUrlProperty
+import com.typesafe.scalalogging.LazyLogging
+import com.wardziniak.kafka.connect.rest.sink.RestSinkConfig.{FlashingModeProperty, RestUrlProperty}
+import com.wardziniak.kafka.connect.rest.sink.properties.FlushingMode
+import com.wardziniak.kafka.connect.rest.sink.properties.FlushingMode.FlushingMode
 import org.apache.kafka.common.config.{AbstractConfig, ConfigDef}
 
-case class RestSinkConfig(props: JMap[String, String]) extends AbstractConfig(RestSinkConfig.CONFIG_DEF, props) {
-  val restURL: String = getString(RestUrlProperty.Name)
+case class RestSinkConfig(props: JMap[String, String])
+  extends AbstractConfig(RestSinkConfig.CONFIG_DEF, props)
+    with LazyLogging {
+  logger.info(s"RestSinkConfig::$props")
+
+  def getRestUrl: String = getString(RestUrlProperty.Name)
+  def getFlushingMode: FlushingMode = FlushingMode.withNameOpt(getString(FlashingModeProperty.Name)).get
 }
 
 object RestSinkConfig {

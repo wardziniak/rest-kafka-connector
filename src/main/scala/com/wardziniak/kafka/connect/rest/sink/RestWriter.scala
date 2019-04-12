@@ -2,17 +2,13 @@ package com.wardziniak.kafka.connect.rest.sink
 
 import com.softwaremill.sttp._
 import com.typesafe.scalalogging.LazyLogging
+import com.wardziniak.kafka.connect.rest.sink.properties.FlushingMode.FlushingMode
 import org.apache.kafka.connect.json.{JsonConverter, JsonConverterConfig}
 import org.apache.kafka.connect.sink.SinkRecord
 
 import scala.collection.JavaConverters._
-import java.util.{Map => JMap}
 
-import org.apache.kafka.connect.storage.{ConverterConfig, ConverterType}
-
-import scala.collection.mutable.ArrayBuffer
-
-case class RestWriter(url: String)
+case class RestWriter(url: String, flushType: FlushingMode)
   extends SinkWriter
   with LazyLogging {
 
@@ -41,8 +37,6 @@ case class RestWriter(url: String)
 //    val aa: Request[String, Nothing] = sttp.get(uri)
 //    val response = aa.send()
 //    logger.debug(s"write: ${response.code}, ${response.unsafeBody}")
-
-    import sinkRecordSerializer._
 
     val codes: Seq[StatusCode] = recordsToFlush.map(convertedRecord => {
       val req1 = sttp.body(convertedRecord)
