@@ -4,6 +4,7 @@ import java.util.{Collection => JCollection, Map => JMap}
 
 import com.typesafe.scalalogging.LazyLogging
 import com.wardziniak.kafka.connect.rest.sink.properties.FlushingMode.FlushingMode
+import com.wardziniak.kafka.connect.rest.sink.properties.RequestMode.RequestMode
 import com.wardziniak.kafka.connect.rest.sink.{RestSinkConfig, RestWriter}
 import org.apache.kafka.clients.consumer.OffsetAndMetadata
 import org.apache.kafka.common.TopicPartition
@@ -15,13 +16,15 @@ class RestSinkTask
 
   var restUrl: String = _
   var flushingMode: FlushingMode = _
+  var requestMode: RequestMode = _
   var writer: RestWriter = _
 
   override def start(props: JMap[String, String]): Unit = {
     val sinkConfig = RestSinkConfig(props)
     restUrl = sinkConfig.getRestUrl
     flushingMode = sinkConfig.getFlushingMode
-    writer = RestWriter(restUrl, flushingMode)
+    requestMode = sinkConfig.getRequestMode
+    writer = RestWriter(restUrl, flushingMode, requestMode)
   }
 
   override def put(records: JCollection[SinkRecord]): Unit = {

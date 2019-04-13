@@ -3,9 +3,10 @@ package com.wardziniak.kafka.connect.rest.sink
 import java.util.{Map => JMap}
 
 import com.typesafe.scalalogging.LazyLogging
-import com.wardziniak.kafka.connect.rest.sink.RestSinkConfig.{FlashingModeProperty, RestUrlProperty}
-import com.wardziniak.kafka.connect.rest.sink.properties.FlushingMode
+import com.wardziniak.kafka.connect.rest.sink.RestSinkConfig.{FlashingModeProperty, RequestModeProperty, RestUrlProperty}
+import com.wardziniak.kafka.connect.rest.sink.properties.{FlushingMode, RequestMode}
 import com.wardziniak.kafka.connect.rest.sink.properties.FlushingMode.FlushingMode
+import com.wardziniak.kafka.connect.rest.sink.properties.RequestMode.RequestMode
 import org.apache.kafka.common.config.{AbstractConfig, ConfigDef}
 
 case class RestSinkConfig(props: JMap[String, String])
@@ -15,6 +16,7 @@ case class RestSinkConfig(props: JMap[String, String])
 
   def getRestUrl: String = getString(RestUrlProperty.Name)
   def getFlushingMode: FlushingMode = FlushingMode.withNameOpt(getString(FlashingModeProperty.Name)).get
+  def getRequestMode: RequestMode = RequestMode.withNameOpt(getString(RequestModeProperty.Name)).get
 }
 
 object RestSinkConfig {
@@ -37,7 +39,7 @@ object RestSinkConfig {
       ConfigDef.Importance.MEDIUM,
       FlashingModeProperty.Doc,
       RestGroup,
-      1,
+      2,
       ConfigDef.Width.LONG,
       FlashingModeProperty.Display
     )
@@ -47,17 +49,17 @@ object RestSinkConfig {
       ConfigDef.Importance.HIGH,
       RequestModeProperty.Doc,
       RestGroup,
-      1,
+      3,
       ConfigDef.Width.LONG,
       RequestModeProperty.Display
     )
     .define(RequestHeadersProperty.Name,
       ConfigDef.Type.STRING,
       RequestHeadersProperty.Default,
-      ConfigDef.Importance.HIGH,
+      ConfigDef.Importance.LOW,
       RequestHeadersProperty.Doc,
       RestGroup,
-      1,
+      4,
       ConfigDef.Width.LONG,
       RequestHeadersProperty.Display
     )
