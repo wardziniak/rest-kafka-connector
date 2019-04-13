@@ -18,8 +18,6 @@ case class RestWriter(url: String, flushType: FlushingMode, requestMode: Request
 
   val request: Request[String, Nothing] = sttp.get(uri"http://localhost:9000/v1/posts")
 
-  //val bufferRecords: ArrayBuffer[SinkRecord] = ArrayBuffer()
-
   val jsonConverter = new JsonConverter()
   jsonConverter.configure(Map[String, String](
     JsonConverterConfig.SCHEMAS_ENABLE_CONFIG -> false.toString,
